@@ -1,16 +1,9 @@
-#pragma once
-#include <glad/glad.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <iostream>
 #include <ostream>
 #include <fstream>
 #include <string>
 #include <array>
 #include <vector>
-#include <assert.h>
-#define STB_IMAGE_IMPLEMENTATION
 
 using std::cout;
 using std::endl;
@@ -21,31 +14,28 @@ using std::getline;
 using std::array;
 using std::vector;
 
-std::string trim(const std::string& s);
-
-
 template<typename T, size_t N>
 struct Vector
 {
 	T vars[N];
 
-    Vector(std::initializer_list<T> items)
+	Vector(std::initializer_list<T> items)
 	{
 		std::copy(items.begin(), items.end(), vars);
 	}
 
-    Vector(T value)
-    {
+	Vector(T value)
+	{
 		std::fill_n(vars, N, value);
 	}
 
-    Vector()
-        :vars{ 0 }
-    {}
+	Vector()
+		:vars{ 0 }
+	{}
 
 	static int size()
-    {
-        return N;
+	{
+		return N;
 	}
 
 	static int T_size()
@@ -66,7 +56,6 @@ struct Vector
 	}
 };
 
-
 using vec2 = Vector<float, 2>;
 using ivec2 = Vector<int, 2>;
 using uvec2 = Vector<unsigned int, 2>;
@@ -86,72 +75,24 @@ struct Vertex
 	static vector<int> indices;
 	vector<T> elements;
 
-	Vertex(std::initializer_list<T> items)
-	{
-		std::copy(items.begin(), items.end(), elements.begin());
-		assert(elements.size() == Vertex<T>::indices.back());
-	}
-
-	Vertex(vector<T> elements)
-		:elements(elements)
-	{
-		assert(this->elements.size() == Vertex<T>::indices.back());
-	}
-
 	template<size_t N, typename ... Args>
 	Vertex(Vector<T, N> elements, Args&&... args)
 	{
+		indices.resize(0);
+		indices.push_back(0);
 		initialize(elements, args...);
-		assert(this->elements.size() == Vertex<T>::indices.back());
 	}
 
 	Vertex() {}
 
-	static void setIndices(vector<int> indices)
-	{
-		Vertex<T>::indices = indices;
-	}
-
-	template<size_t N, typename ... Args>
-	static void setIndices(Vector<T, N> elements, Args&&... args)
-	{
-		Vertex<T>::indices.resize(0);
-		Vertex<T>::indices.push_back(0);
-		Vertex<T>::_setIndices(elements, args...);
-	}
-
-	static int size()
-	{
-		return Vertex<T>::indices.back();
-	}
-
-	static int element_size(size_t index)
-	{
-		return Vertex<T>::indices[index + 1] - Vertex<T>::indices[index];
-	}
-
-	static int offset(size_t index)
-	{
-		return Vertex<T>::indices[index];
-	}
-
-private:
 	void initialize() {}
 
 	template<size_t N, typename ... Args>
 	void initialize(Vector<T, N> elements, Args&&... args)
 	{
 		this->elements.insert(this->elements.end(), elements.vars, elements.vars + N);
-		initialize(args...);
-	}
-
-	static void _setIndices() {}
-
-	template<size_t N, typename ... Args>
-	static void _setIndices(Vector<T, N> elements, Args&&... args)
-	{
 		Vertex<T>::indices.push_back(Vertex<T>::indices.back() + N);
-		Vertex<T>::_setIndices(args...);
+		initialize(args...);
 	}
 };
 
@@ -159,3 +100,20 @@ template<typename T>
 vector<int> Vertex<T>::indices = { 0 };
 
 using vertex = Vertex<float>;
+
+int main()
+{
+	vector<vertex> vertices = {
+		vertex(vec3({ 1.0f,  1.0f, 0.0f})),  // top right
+		vertex(vec3({ 1.0f, -1.0f, 0.0f})),  // bottom right
+		vertex(vec3({-1.0f, -1.0f, 0.0f})),  // bottom left
+		vertex(vec3({-1.0f,  1.0f, 0.0f}))   // top left
+	};
+
+	for (size_t i = 0; i < Vertex<int>::indices.size(); i++)
+	{
+		cout << Vertex<int>::indices[i] << " ";
+	}
+
+	return 0;
+}

@@ -3,20 +3,23 @@
 #include "shader.h"
 #include "mesh.h"
 
-vector<vec3> vertices = {
-	vec3( 1.0f,  1.0f, 0.0f),  // top right
-	vec3( 1.0f, -1.0f, 0.0f),  // bottom right
-	vec3(-1.0f, -1.0f, 0.0f),  // bottom left
-	vec3(-1.0f,  1.0f, 0.0f)   // top left
-};
-
-vector<int> indices = {  // note that we start from 0!
-	0, 1, 3,   // first triangle
-	1, 2, 3    // second triangle
-};
-
-
 int main() {
+
+	vertex::setIndices(vec3(), vec3(), vec2());
+
+	vector<vertex> vertices = {
+		vertex(vec3({ 1.0f,  1.0f, 0.0f}), vec3({1.0f, 0.0f, 0.0f}), vec2{1.0f, 1.0f}),  // top right
+		vertex(vec3({ 1.0f, -1.0f, 0.0f}), vec3({0.0f, 1.0f, 0.0f}), vec2{1.0f, 0.0f}),  // bottom right
+		vertex(vec3({-1.0f, -1.0f, 0.0f}), vec3({0.0f, 0.0f, 1.0f}), vec2{0.0f, 0.0f}),  // bottom left
+		vertex(vec3({-1.0f,  1.0f, 0.0f}), vec3({1.0f, 1.0f, 0.0f}), vec2{0.0f, 1.0f})   // top left
+	};
+
+	vector<int> indices = {  // note that we start from 0!
+		0, 1, 3,   // first triangle
+		1, 2, 3    // second triangle
+	};
+
+	//vertex v1 = { vec3({0.5f,  0.5f, 0.0f}), vec3({1.0f, 0.0f, 0.0f}), vec2({1.0f, 1.0f})};
 
 	Window window(480, 360, "Title");
 
@@ -33,5 +36,5 @@ int main() {
 		mesh.draw();
 	}
 
-	return 0;
+	//return 0;
 }

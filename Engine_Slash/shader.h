@@ -82,13 +82,13 @@ public:
 	void setVec2(const string& name, const vec2& value) const
 	{
 		glUseProgram(this->id);
-		glUniform2fv(glGetUniformLocation(this->id, name.c_str()), 1, &value.x);
+		glUniform2fv(glGetUniformLocation(this->id, name.c_str()), 1, value.vars);
 	}
 
 	void setVec3(const string& name, const vec3& value) const
 	{
 		glUseProgram(this->id);
-		glUniform3fv(glGetUniformLocation(this->id, name.c_str()), 1, &value.x);
+		glUniform3fv(glGetUniformLocation(this->id, name.c_str()), 1, value.vars);
 	}
 
 private:

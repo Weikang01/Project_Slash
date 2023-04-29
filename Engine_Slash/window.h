@@ -63,21 +63,21 @@ public:
 	{
 		int x, y;
 		glfwGetWindowPos(this->window, &x, &y);
-		return vec2(x, y);
+		return vec2({ (float)x, (float)y });
 	}
 
 	vec2 getPixel() const
 	{
 		int width, height;
 		glfwGetWindowSize(this->window, &width, &height);
-		return vec2(width, height);
+		return vec2({ (float)width, (float)height });
 	}
 
 	vec2 getSize() const
 	{
 		int width, height;
 		glfwGetFramebufferSize(this->window, &width, &height);
-		return vec2(1.f, (float)height/width);
+		return vec2({ 1.f, (float)height / width });
 	}
 
 	vec2 getMouse() const
@@ -92,7 +92,7 @@ public:
 		y *= 2.f;
 		x -= 1.f;
 		y = 1.f - y;
-		return vec2(x, y);
+		return vec2({ (float)x, (float)y });
 	}
 };
 
