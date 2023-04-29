@@ -1,12 +1,14 @@
 #pragma once
 #include "stdafx.h"
+#include "texture.h"
 
 class Shader
 {
 	unsigned int id;
+	vector<unsigned int> textures;
 public:
 	Shader(const char* filepath)
-		:id(glCreateProgram())
+		:id(glCreateProgram()), textures({})
 	{
 		ifstream file(filepath);
 		if (file.is_open())
@@ -82,13 +84,38 @@ public:
 	void setVec2(const string& name, const vec2& value) const
 	{
 		glUseProgram(this->id);
-		glUniform2fv(glGetUniformLocation(this->id, name.c_str()), 1, value.vars);
+		glUniform2fv(glGetUniformLocation(this->id, name.c_str()), 1, glm::value_ptr(value));
 	}
 
 	void setVec3(const string& name, const vec3& value) const
 	{
 		glUseProgram(this->id);
-		glUniform3fv(glGetUniformLocation(this->id, name.c_str()), 1, value.vars);
+		glUniform3fv(glGetUniformLocation(this->id, name.c_str()), 1, glm::value_ptr(value));
+	}
+
+	void setVec4(const string& name, const vec4& value) const
+	{
+		glUseProgram(this->id);
+		glUniform4fv(glGetUniformLocation(this->id, name.c_str()), 1, glm::value_ptr(value));
+	}
+
+	void addTexture(const string& name, const string& path)
+	{
+		glUseProgram(this->id);
+
+		Texture2D texture(path);
+		glUniform1i(glGetUniformLocation(this->id, name.c_str()), textures.size());
+		textures.push_back(texture.id);
+	}
+
+	void setTextures() const
+	{
+		glUseProgram(this->id);
+		for (size_t i = 0; i < textures.size(); i++)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, textures[i]);
+		}
 	}
 
 private:

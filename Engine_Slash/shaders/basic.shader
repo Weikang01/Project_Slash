@@ -2,13 +2,17 @@
 #version 330 core
 layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec3 aColor;
-layout(location = 2) in vec3 aCoord;
+layout(location = 2) in vec2 aTexCoord;
 
 out vec3 FragPos;
+out vec3 ourColor;
+out vec2 TexCoord;
 
 void main()
 {
 	FragPos = aPos;
+    ourColor = aColor;
+    TexCoord = aTexCoord;
 	gl_Position = vec4(aPos, 1.0);
 }
 
@@ -16,6 +20,11 @@ void main()
 #version 330 core
 
 in vec3 FragPos;
+in vec3 ourColor;
+in vec2 TexCoord;
+
+uniform sampler2D ourTexture;
+uniform sampler2D ourTexture2;
 
 uniform float uTime;
 uniform vec2 uResolution;
@@ -67,12 +76,12 @@ float fbm(in vec2 st) {
     return value;
 }
 
-void main()
+vec3 FX_noise()
 {
-	vec2 st = FragPos.xy * uResolution;
-	vec2 mouse = uMouse * uResolution;
+    vec2 st = FragPos.xy * uResolution;
+    vec2 mouse = uMouse * uResolution;
     st += 1.f;
-	st *= 2.f;
+    st *= 2.f;
 
     vec3 color = vec3(0.0);
 
@@ -98,8 +107,10 @@ void main()
         vec3(0.666667, 0.666667, 0.666667),
         clamp(length(r.x), 0.0, 1.0));
 
-    color = 1.f - color;
-    //color.xy = smoothstep(.47, .5,color.xy) * color.xy;
+    return color;
+}
 
-	FragColor = vec4(color, 1.f);
+void main()
+{
+    FragColor = (texture(ourTexture, TexCoord) + texture(ourTexture2, TexCoord)) * .5f;
 }

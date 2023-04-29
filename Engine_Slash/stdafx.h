@@ -2,15 +2,20 @@
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <stb/stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
 #include <ostream>
 #include <fstream>
+#include <filesystem>
 #include <string>
 #include <array>
 #include <vector>
 #include <assert.h>
-#define STB_IMAGE_IMPLEMENTATION
+
 
 using std::cout;
 using std::endl;
@@ -23,62 +28,9 @@ using std::vector;
 
 std::string trim(const std::string& s);
 
-
-template<typename T, size_t N>
-struct Vector
-{
-	T vars[N];
-
-    Vector(std::initializer_list<T> items)
-	{
-		std::copy(items.begin(), items.end(), vars);
-	}
-
-    Vector(T value)
-    {
-		std::fill_n(vars, N, value);
-	}
-
-    Vector()
-        :vars{ 0 }
-    {}
-
-	static int size()
-    {
-        return N;
-	}
-
-	static int T_size()
-	{
-		return sizeof(T);
-	}
-
-	friend ostream& operator<<(ostream& os, const Vector<T, N>& vec)
-	{
-		os << "vec" << N << "(" << vars[0];
-		for (size_t i = 1; i < N; i++)
-		{
-			os << ", " << vars[i];
-		}
-
-		os << ")";
-		return os;
-	}
-};
-
-
-using vec2 = Vector<float, 2>;
-using ivec2 = Vector<int, 2>;
-using uvec2 = Vector<unsigned int, 2>;
-
-using vec3 = Vector<float, 3>;
-using ivec3 = Vector<int, 3>;
-using uvec3 = Vector<unsigned int, 3>;
-
-using vec4 = Vector<float, 4>;
-using ivec4 = Vector<int, 4>;
-using uvec4 = Vector<unsigned int, 4>;
-
+using glm::vec2;
+using glm::vec3;
+using glm::vec4;
 
 template<typename T>
 struct Vertex
@@ -98,8 +50,8 @@ struct Vertex
 		assert(this->elements.size() == Vertex<T>::indices.back());
 	}
 
-	template<size_t N, typename ... Args>
-	Vertex(Vector<T, N> elements, Args&&... args)
+	template<size_t N, glm::qualifier Q, typename ... Args>
+	Vertex(glm::vec<N, T, Q> elements, Args&&... args)
 	{
 		initialize(elements, args...);
 		assert(this->elements.size() == Vertex<T>::indices.back());
@@ -112,8 +64,8 @@ struct Vertex
 		Vertex<T>::indices = indices;
 	}
 
-	template<size_t N, typename ... Args>
-	static void setIndices(Vector<T, N> elements, Args&&... args)
+	template<size_t N, glm::qualifier Q, typename ... Args>
+	static void setIndices(glm::vec<N, T, Q> elements, Args&&... args)
 	{
 		Vertex<T>::indices.resize(0);
 		Vertex<T>::indices.push_back(0);
@@ -138,17 +90,17 @@ struct Vertex
 private:
 	void initialize() {}
 
-	template<size_t N, typename ... Args>
-	void initialize(Vector<T, N> elements, Args&&... args)
+	template<size_t N, glm::qualifier Q, typename ... Args>
+	void initialize(glm::vec<N, T, Q> elements, Args&&... args)
 	{
-		this->elements.insert(this->elements.end(), elements.vars, elements.vars + N);
+		this->elements.insert(this->elements.end(), glm::value_ptr(elements), glm::value_ptr(elements) + N);
 		initialize(args...);
 	}
 
 	static void _setIndices() {}
 
-	template<size_t N, typename ... Args>
-	static void _setIndices(Vector<T, N> elements, Args&&... args)
+	template<size_t N, glm::qualifier Q, typename ... Args>
+	static void _setIndices(glm::vec<N, T, Q> elements, Args&&... args)
 	{
 		Vertex<T>::indices.push_back(Vertex<T>::indices.back() + N);
 		Vertex<T>::_setIndices(args...);
@@ -159,3 +111,4 @@ template<typename T>
 vector<int> Vertex<T>::indices = { 0 };
 
 using vertex = Vertex<float>;
+

@@ -101,19 +101,24 @@ vector<int> Vertex<T>::indices = { 0 };
 
 using vertex = Vertex<float>;
 
+class Shader
+{
+	vector<unsigned int> textures;
+public:
+	Shader() {}
+	~Shader() = default;
+
+	void add(unsigned int texture)
+	{
+		textures.push_back(texture);
+	}
+private:
+
+};
+
+
 int main()
 {
-	vector<vertex> vertices = {
-		vertex(vec3({ 1.0f,  1.0f, 0.0f})),  // top right
-		vertex(vec3({ 1.0f, -1.0f, 0.0f})),  // bottom right
-		vertex(vec3({-1.0f, -1.0f, 0.0f})),  // bottom left
-		vertex(vec3({-1.0f,  1.0f, 0.0f}))   // top left
-	};
-
-	for (size_t i = 0; i < Vertex<int>::indices.size(); i++)
-	{
-		cout << Vertex<int>::indices[i] << " ";
-	}
 
 	return 0;
 }
